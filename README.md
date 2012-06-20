@@ -15,4 +15,4 @@ EmailRecipientGuard is using an ActionMailer interceptor to change the message b
 
 ## License
 
-MIT License. Copyright 2012 Autohaus24.
+MIT License. Copyright 2012 autohaus24 GmbH
