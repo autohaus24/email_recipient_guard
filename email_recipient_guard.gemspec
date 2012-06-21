@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ["m.raidel@autohaus24.de"]
   s.summary     = "configure your outgoing email to always go to the same address"
   s.description = "By setting a config option you can configure your outgoing email to always go to the same address (useful for example for development or staging environments)"
+  s.homepage    = "https://github.com/autohaus24/email_recipient_guard"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
