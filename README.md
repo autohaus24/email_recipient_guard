@@ -12,10 +12,9 @@ Rails.application.config.email_recipient = "test@example.com"
 
 ## another possible options
 ## email_recipient needs to be set to make following work!
-# send (as CC) to more recipients
-config.email_cc_recipient = "test1@example.com"
-config.email_cc_recipient = "test1@example.com, test2@example.com"
-config.email_cc_recipient = ["test1@example.com", "test2@example.com"]
+# send (as CC) to more recipients - second and following array 
+# addresses will be set in CC header
+config.email_recipient = ["test1@example.com", "test2@example.com"]
 # prefix subject of outgoing emails
 confir.email_subject_prefix = "[test_emails]"
 ```
