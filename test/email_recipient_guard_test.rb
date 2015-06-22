@@ -8,22 +8,39 @@ class EmailRecipientGuardTest < ActiveSupport::TestCase
       ActionMailer::Base.deliveries.clear
     end
 
-    should "not send to the real recipient when email_recipient is set" do
-      EmailRecipientGuard::Railtie.config.email_recipient = @send_emails_to
+    context "send email" do
+      setup do
+        EmailRecipientGuard::Railtie.config.email_recipient = @send_emails_to
+      end
 
-      Notifications.notification(@recipient).deliver
+      should "not send to the real recipient when email_recipient is set" do
+        Notifications.notification(to: @recipient).deliver
 
-      assert_equal [ @send_emails_to ], ActionMailer::Base.deliveries[0].to
-      assert_equal %Q/"#{@recipient}" <#{@send_emails_to}>/, ActionMailer::Base.deliveries[0].header["to"].to_s
+        mail = ActionMailer::Base.deliveries[0]
+        assert_equal [ @send_emails_to ], mail.to
+        assert_empty mail.cc
+        assert_empty mail.bcc
+
+        assert_equal %Q/"#{@recipient}" <#{@send_emails_to}>/, mail.header["to"].to_s
+      end
+
+      should "not send to the real cc/bcc" do
+        Notifications.notification(to: @recipient, cc: "cc_@example.com", bcc: "bcc_@example.com").deliver
+
+        mail = ActionMailer::Base.deliveries[0]
+        assert_equal %Q/"#{@recipient}" <#{@send_emails_to}>/, mail.header["to"].to_s
+        assert_equal %Q/"cc_@example.com" <#{@send_emails_to}>/, mail.header["cc"].to_s
+        assert_equal %Q/"bcc_@example.com" <#{@send_emails_to}>/, mail.header["bcc"].to_s
+      end
     end
 
     should "correctly format the header" do
       EmailRecipientGuard::Railtie.config.email_recipient = @send_emails_to
 
-      Notifications.notification('test@example.com').deliver
-      Notifications.notification('Test <test@example.com>').deliver
-      Notifications.notification('"Test" <test@example.com>').deliver
-      Notifications.notification('"Test" <test@example.com').deliver
+      Notifications.notification(to: 'test@example.com').deliver
+      Notifications.notification(to: 'Test <test@example.com>').deliver
+      Notifications.notification(to: '"Test" <test@example.com>').deliver
+      Notifications.notification(to: '"Test" <test@example.com').deliver
 
       assert_equal [ @send_emails_to ], ActionMailer::Base.deliveries[0].to
       assert_equal %Q/"test@example.com" <#{@send_emails_to}>/, ActionMailer::Base.deliveries[0].header["to"].to_s
@@ -38,7 +55,7 @@ class EmailRecipientGuardTest < ActiveSupport::TestCase
     should "send to the real recipient when email_recipient is set to nil" do
       EmailRecipientGuard::Railtie.config.email_recipient = nil
 
-      Notifications.notification(@recipient).deliver
+      Notifications.notification(to: @recipient).deliver
 
       assert_equal [ @recipient ], ActionMailer::Base.deliveries[0].to
       assert_equal @recipient, ActionMailer::Base.deliveries[0].header["to"].to_s
