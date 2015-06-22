@@ -1,9 +1,9 @@
 class Notifications < ActionMailer::Base
   default :from => "from@example.com"
 
-  def notification(to)
+  def notification(recipients)
     @greeting = "Hi"
 
-    mail :to => to
+    mail recipients
   end
 end
