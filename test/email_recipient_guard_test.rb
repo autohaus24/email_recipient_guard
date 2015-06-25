@@ -25,12 +25,15 @@ class EmailRecipientGuardTest < ActiveSupport::TestCase
       end
 
       should "not send to the real cc/bcc" do
+        EmailRecipientGuard::Railtie.config.email_recipient = {to: @send_emails_to,
+                                                               cc: "default_cc@example.com",
+                                                               bcc: "default_bcc@example.com"}
         Notifications.notification(to: @recipient, cc: "cc_@example.com", bcc: "bcc_@example.com").deliver
 
         mail = ActionMailer::Base.deliveries[0]
         assert_equal %Q/"#{@recipient}" <#{@send_emails_to}>/, mail.header["to"].to_s
-        assert_equal %Q/"cc_@example.com" <#{@send_emails_to}>/, mail.header["cc"].to_s
-        assert_equal %Q/"bcc_@example.com" <#{@send_emails_to}>/, mail.header["bcc"].to_s
+        assert_equal %Q/"cc_@example.com" <default_cc@example.com>/, mail.header["cc"].to_s
+        assert_equal %Q/"bcc_@example.com" <default_bcc@example.com>/, mail.header["bcc"].to_s
       end
     end
 
