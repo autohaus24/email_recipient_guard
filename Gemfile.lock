@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    email_recipient_guard (0.10.0.dev2031.rc2)
+    email_recipient_guard (0.10.0.dev2031.rc3)
       rails
 
 GEM
